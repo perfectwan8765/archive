@@ -12,3 +12,6 @@ kubectl get pods --field-selector=status.phase=Failed -n cvat
 
 # old revision replicaset delete
 kubectl delete replicaset $(kubectl get replicaset -o jsonpath='{ .items[?(@.spec.replicas=0)].metadata.name }' -n jupyterhub) -n jupyterhub
+
+# get pvc of pods
+kubectl get pods --all-namespaces -o=json | jq -c '.items[] | {name: .metadata.name, namespace: .metadata.namespace, claimName: .spec |  select( has ("volumes") ).volumes[] | select( has ("persistentVolumeClaim") ).persistentVolumeClaim.claimName }'
