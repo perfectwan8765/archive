@@ -80,9 +80,9 @@ sudo systemctl enable docker --now
 sudo systemctl restart docker
 
 # cri-dockerd install
-wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.2/cri-dockerd_0.3.2.3-0.ubuntu-jammy_amd64.deb
-sudo dpkg -i cri-dockerd_0.3.2.3-0.ubuntu-jammy_amd64.deb
-rm cri-dockerd_0.3.2.3-0.ubuntu-jammy_amd64.deb
+curl -L https://api.github.com/repos/Mirantis/cri-dockerd/releases/latest -H "Accept: application/vnd.github+json" | jq ".assets[-1].browser_download_url" | xargs wget
+find . -name *.deb | xargs sudo dpkg -i
+find . -name *.deb | xargs rm
 
 # k8s install
 sudo apt-get install -y apt-transport-https ca-certificates curl
