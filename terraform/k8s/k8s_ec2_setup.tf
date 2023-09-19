@@ -20,6 +20,7 @@ variable "nodes" {
     docker_size = number
     volume_size = number
     public_ip = bool
+    private_ip = string
   }))
   default = {
     "k8smaster" = {
@@ -28,29 +29,44 @@ variable "nodes" {
       size = 40
       volume_size = 0
       public_ip = true
+      private_ip = "172.31.36.101"
     },
     "k8sworker1" = {
       name = "k8sworker1" 
       type = "t3.xlarge" 
       docker_size = 40
       volume_size = 100
-      public_ip = false 
+      public_ip = false
+      private_ip = "172.31.36.102"
     },
     "k8sworker2" = {
       name = "k8sworker2" 
       type = "t3.xlarge" 
       docker_size = 40
       volume_size = 100
-      public_ip = false 
+      public_ip = false
+      private_ip = "172.31.36.103"
     },
     "k8sworker3" = {
       name = "k8sworker3" 
       type = "t3.xlarge" 
       docker_size = 40
       volume_size = 100
-      public_ip = false 
+      public_ip = false
+      private_ip = "172.31.36.104"
     }
   }
+}
+
+resource "aws_network_interface" "enis" {
+  for_each = var.nodes
+
+  subnet_id = "subnet-f06d9fbf"
+  private_ips = ["${each.value.private_ip}"]
+  security_groups = [
+    "sg-7936aa07",
+    "sg-01b44ac4851bcf474"
+  ]
 }
 
 resource "aws_instance" "instances" {
@@ -61,14 +77,15 @@ resource "aws_instance" "instances" {
   instance_type     = each.value.type
   key_name          = "coxspace-teat" 
   user_data         = file("./user-data/node-install.sh")
-  vpc_security_group_ids = [
-    "default",
-    "launch-wizard-1" 
-  ]
 
   root_block_device {
     volume_type = "gp3" 
-    volume_size = 15 # GiB
+    volume_size = 10 # GiB
+  }
+
+  network_interface {
+    network_interface_id = aws_network_interface.enis[each.value.name].id
+    device_index = 0
   }
 
   tags = {
