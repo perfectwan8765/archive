@@ -1,5 +1,34 @@
 #!/bin/bash
 
+# set hostname
+PRIVATE_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+
+case $PRIVATE_IP in
+  "172.31.36.101")
+    HOSTNAME="k8smaster"
+    ;;
+  "172.31.36.102")
+    HOSTNAME="k8sworker1"
+    ;;
+  "172.31.36.103")
+    HOSTNAME="k8sworker2"
+    ;;
+  "172.31.36.104")
+    HOSTNAME="k8sworker3"
+    ;;
+esac
+
+sudo hostnamectl set-hostname $HOSTNAME
+
+# set hostfile
+cat <<EOF | sudo tee -a /etc/hosts
+
+172.31.36.101 k8smaster
+172.31.36.102 k8sworker1
+172.31.36.103 k8sworker2
+172.31.36.104 k8sworker3
+EOF
+
 # swap off
 sudo swapoff -a
 
