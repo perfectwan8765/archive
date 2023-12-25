@@ -26,7 +26,7 @@ variable "nodes" {
     "k8smaster" = {
       name = "k8smaster" 
       type = "t3.large" 
-      size = 40
+      docker_size = 40
       volume_size = 0
       public_ip = true
       private_ip = "172.31.36.101"
@@ -61,11 +61,11 @@ variable "nodes" {
 resource "aws_network_interface" "enis" {
   for_each = var.nodes
 
-  subnet_id = "subnet-f06d9fbf"
+  subnet_id = "****"
   private_ips = ["${each.value.private_ip}"]
   security_groups = [
-    "sg-7936aa07",
-    "sg-01b44ac4851bcf474"
+    "****",
+    "****"
   ]
 }
 
@@ -75,7 +75,7 @@ resource "aws_instance" "instances" {
   availability_zone = "ap-northeast-2c" 
   ami               = "ami-0c9c942bd7bf113a2" # ubuntu 22.04 LTS
   instance_type     = each.value.type
-  key_name          = "coxspace-teat" 
+  key_name          = "****"
   user_data         = file("./user-data/node-install.sh")
 
   root_block_device {
@@ -111,7 +111,7 @@ resource "aws_volume_attachment" "docker_attachements" {
   for_each = var.nodes
 
   device_name = "/dev/sdh" 
-  volume_id   = aws_ebs_volume.volumes[each.value.name].id
+  volume_id   = aws_ebs_volume.docker_volumes[each.value.name].id
   instance_id = aws_instance.instances[each.value.name].id
 }
 
