@@ -80,6 +80,7 @@ sudo systemctl enable docker --now
 sudo systemctl restart docker
 
 # cri-dockerd install
+sudo apt install jq -y
 curl -L https://api.github.com/repos/Mirantis/cri-dockerd/releases/latest -H "Accept: application/vnd.github+json" | jq ".assets[-1].browser_download_url" | xargs wget
 find . -name *.deb | xargs sudo dpkg -i
 find . -name *.deb | xargs rm
