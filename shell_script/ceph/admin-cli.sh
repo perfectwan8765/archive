@@ -14,3 +14,7 @@ ceph crash info ${crash_id}
 
 ceph crash archive ${crash_id} 
 ceph crash archive-all
+
+
+# ceph daemon tell
+ceph tell mds.${mds_id} config show | grep mds_cache_meemory_limit
