@@ -1,0 +1,32 @@
+services:
+  ollama-gpu:
+    volumes:
+      - ./volumes/ollama:/root/.ollama
+      - /usr/bin/nvidia-smi:/usr/bin/nvidia-smi
+      - /usr/lib/x86_64-linux-gnu/libnvidia-ml.so:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so
+      - /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1
+    container_name: ollama-gpu
+      #pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:0.4.7
+    ports:
+      - 7869:11434
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+    networks:
+      - package_network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+networks:
+  #ollama-docker:
+  #  external: false
+  package_network:
+    external: true

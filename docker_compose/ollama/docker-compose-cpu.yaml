@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  ollama-cpu:
+    volumes:
+      - ./volumes/ollama:/root/.ollama
+    container_name: ollama_cpu
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:0.4.7
+    ports:
+      - 7869:11434
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    networks:
+      - ollama-docker
+
+networks:
+  ollama-docker:
+    external: false
